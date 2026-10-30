@@ -1,3 +1,6 @@
 .vercel
 .taste-skill/
 node_modules/
+
+.vercel
+.env*
