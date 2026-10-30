@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forth | Think human. Operate AI.</title>
+<meta name="description" content="Forth implementa inteligencia artificial en empresas: automatizaciones, agentes de IA, formación ejecutiva y consultoría estratégica. Convierte inteligencia en crecimiento.">
+<meta name="theme-color" content="#0E0F2C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+  :root {
+    /* Marca */
+    --navy: #0E0F2C;
+    --orange: #F26B3A;
+    --orange-press: #D95427;
+    --sky: #B8E4EA;
+    --white: #FFFFFF;
+    /* Roles */
+    --ground: var(--white);
+    --ink: var(--navy);
+    --ink-soft: #4A4C68;
+    --tone-1: #F1F8F9;
+    --tone-2: #E3F3F5;
+    --navy-tone: #1A1C40;
+    --on-navy-soft: #B9BBD2;
+    --error: #C42F2F;
+    /* Tipo */
+    --sans: 'Urbanist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+    --t-display: clamp(44px, 10.4vw, 156px);
+    --t-h2: clamp(38px, 5.6vw, 80px);
+    --t-h3: clamp(28px, 2.9vw, 42px);
+    --t-statement: clamp(24px, 2.4vw, 34px);
+    --t-body: 18px;
+    --t-small: 15px;
+    /* Espacio */
+    --gutter: clamp(20px, 3vw, 40px);
+    --section: clamp(96px, 13vw, 200px);
+    --max: 1360px;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    font-size: var(--t-body);
+    line-height: 1.55;
+    color: var(--ink);
+    background: var(--ground);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  img, svg { display: block; max-width: 100%; }
+  a { color: inherit; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  h1, h2, h3 { margin: 0; font-weight: 800; letter-spacing: -0.035em; line-height: .98; text-wrap: balance; }
+  p { margin: 0; }
+  .wrap { width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+  .section { padding: var(--section) 0; }
+  .h2 { font-size: var(--t-h2); }
+  .lede { font-size: 20px; line-height: 1.5; max-width: 34ch; margin-top: 28px; }
+  :focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+  ::selection { background: var(--orange); color: var(--white); }
+
+  /* La flecha de Forth: el motivo de toda la página */
+  .arrow { width: 1em; height: 1em; color: var(--orange); flex-shrink: 0; transition: transform .35s var(--ease); }
+
+  /* ---------- Logo ---------- */
+  .logo {
+    display: inline-flex; align-items: flex-start;
+    font-weight: 800; font-size: 28px; letter-spacing: -0.04em; line-height: 1;
+    text-decoration: none; color: var(--navy);
+  }
+  .logo .arrow { width: .42em; height: .42em; margin-left: .05em; margin-top: -.1em; }
+  .logo:hover .arrow { transform: translate(2px, -2px); }
+
+  /* ---------- Botones ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+    min-height: 56px; padding: 0 30px;
+    border: 0; border-radius: 999px;
+    background: var(--orange); color: var(--white);
+    font-weight: 700; font-size: 17px; text-decoration: none; white-space: nowrap;
+    cursor: pointer;
+    transition: background .25s ease, transform .25s var(--ease);
+  }
+  .btn .arrow { color: currentColor; width: 18px; height: 18px; }
+  .btn:hover { background: var(--orange-press); }
+  .btn:hover .arrow { transform: translate(3px, -3px); }
+  .btn:active { transform: scale(.97); }
+  .btn[disabled] { opacity: .7; cursor: wait; }
+  .btn-sm { min-height: 44px; padding: 0 22px; font-size: 15px; }
+  .text-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-weight: 700; text-decoration: none; color: var(--ink);
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 2px no-repeat;
+    transition: background-size .35s var(--ease);
+  }
+  .text-link:hover { background-size: 100% 2px; }
+
+  /* ---------- Barra ---------- */
+  .header { position: fixed; inset: 0 0 auto 0; z-index: 50; transition: background .3s ease; }
+  .header.scrolled, .menu-open .header { background: var(--white); }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 76px; }
+  .nav-links { display: flex; align-items: center; gap: 36px; }
+  .nav-links a:not(.btn) { font-weight: 600; font-size: 16px; text-decoration: none; transition: color .2s; }
+  .nav-links a:not(.btn):hover { color: var(--orange-press); }
+  .menu-toggle { display: none; width: 44px; height: 44px; border: 0; background: transparent; cursor: pointer; position: relative; }
+  .menu-toggle span { position: absolute; left: 10px; right: 10px; height: 2px; background: var(--navy); border-radius: 2px; transition: transform .3s ease, opacity .3s ease, top .3s ease; }
+  .menu-toggle span:nth-child(1) { top: 15px; }
+  .menu-toggle span:nth-child(2) { top: 21px; }
+  .menu-toggle span:nth-child(3) { top: 27px; }
+  .menu-open .menu-toggle span:nth-child(1) { top: 21px; transform: rotate(45deg); }
+  .menu-open .menu-toggle span:nth-child(2) { opacity: 0; }
+  .menu-open .menu-toggle span:nth-child(3) { top: 21px; transform: rotate(-45deg); }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    background: linear-gradient(180deg, var(--sky) 0%, var(--white) 100%);
+    padding: 150px 0 clamp(80px, 9vw, 140px);
+  }
+  .hero-layout { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 5vw, 80px); align-items: start; margin-top: clamp(36px, 4vw, 64px); }
+  .tagline { font-size: var(--t-display); line-height: .9; letter-spacing: -0.045em; white-space: nowrap; }
+  .tagline .ai { margin-top: .04em; }
+  .tagline .human { display: block; font-family: var(--serif); font-weight: 400; letter-spacing: -0.03em; color: var(--navy); }
+  .tagline .ai { display: block; color: var(--orange); font-weight: 800; }
+  .hero-sub { font-size: clamp(22px, 2.2vw, 30px); font-weight: 600; letter-spacing: -0.015em; line-height: 1.25; max-width: 22ch; }
+  .hero-actions { margin-top: 40px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+  .hero-note { margin-top: 20px; font-size: var(--t-small); color: var(--ink-soft); }
+
+  /* Fragmento de interfaz: un agente Forth trabajando */
+  .agent {
+    background: var(--white); border-radius: 24px; padding: 28px;
+    border: 1px solid rgba(14,15,44,.08);
+  }
+  .agent-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .agent-name { font-weight: 700; font-size: 17px; }
+  .agent-state { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #1F7A55; }
+  .agent-state i { width: 8px; height: 8px; border-radius: 50%; background: #23A26F; animation: pulse 1.8s ease-in-out infinite; }
+  .agent-msg {
+    margin-top: 22px; padding: 16px 18px; border-radius: 16px 16px 16px 4px;
+    background: var(--tone-2); font-size: 16px; line-height: 1.45;
+  }
+  .agent-tasks { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 4px; }
+  .agent-tasks li {
+    display: grid; grid-template-columns: 26px 1fr auto; gap: 12px; align-items: center;
+    padding: 12px 4px; font-size: 16px;
+  }
+  .agent-tasks li + li { border-top: 1px solid rgba(14,15,44,.07); }
+  .tick { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--tone-2); transition: background .4s ease; }
+  .tick svg { width: 13px; height: 13px; color: var(--white); opacity: 0; transform: scale(.4); transition: opacity .3s ease, transform .4s var(--ease); }
+  .agent-tasks li.done .tick { background: var(--navy); }
+  .agent-tasks li.done .tick svg { opacity: 1; transform: none; }
+  .agent-tasks .time { font-size: 14px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .agent-foot {
+    margin-top: 16px; padding: 16px 18px; border-radius: 16px; background: var(--navy); color: var(--white);
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-size: 15px;
+  }
+  .agent-foot strong { font-size: 26px; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .agent-foot strong span { color: var(--orange); }
+
+  /* ---------- Cifras + calculadora ---------- */
+  .proof { padding: clamp(80px, 9vw, 140px) 0 var(--section); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gutter); }
+  .stat-num { font-size: clamp(64px, 9vw, 136px); font-weight: 800; letter-spacing: -0.05em; line-height: .9; font-variant-numeric: tabular-nums; }
+  .stat-num span { color: var(--orange); }
+  .stat-label { margin-top: 14px; font-size: 20px; font-weight: 600; }
+
+  .calc {
+    margin-top: clamp(72px, 8vw, 120px);
+    background: var(--tone-1); border-radius: 32px;
+    padding: clamp(32px, 5vw, 72px);
+    display: grid; grid-template-columns: 1fr 1fr; gap: clamp(36px, 5vw, 80px); align-items: center;
+  }
+  .calc h2 { font-size: clamp(32px, 3.6vw, 52px); }
+  .calc-intro { margin-top: 20px; max-width: 40ch; }
+  .calc-controls { display: grid; gap: 30px; margin-top: 36px; }
+  .range-row label { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; font-weight: 600; }
+  .range-row output { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; margin-top: 14px; height: 32px; background: transparent; -webkit-appearance: none; appearance: none; cursor: pointer; }
+  input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 6px; background: linear-gradient(var(--navy), var(--navy)) 0 / var(--fill, 50%) 100% no-repeat, var(--tone-2); }
+  input[type=range]::-moz-range-track { height: 6px; border-radius: 6px; background: var(--tone-2); }
+  input[type=range]::-moz-range-progress { height: 6px; border-radius: 6px; background: var(--navy); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -11px; border-radius: 50%; background: var(--orange); border: 4px solid var(--white); transition: transform .2s ease; }
+  input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--orange); border: 4px solid var(--white); }
+  input[type=range]:active::-webkit-slider-thumb { transform: scale(1.15); }
+  .calc-result { background: var(--navy); color: var(--white); border-radius: 24px; padding: clamp(28px, 4vw, 52px); }
+  .calc-result .big { display: flex; align-items: flex-start; gap: 8px; font-size: clamp(72px, 9vw, 132px); font-weight: 800; letter-spacing: -0.05em; line-height: .9; font-variant-numeric: tabular-nums; }
+  .calc-result .big .arrow { width: .32em; height: .32em; margin-top: .06em; }
+  .calc-result .unit { margin-top: 14px; font-size: 22px; font-weight: 600; }
+  .calc-result .detail { margin-top: 26px; padding-top: 22px; color: var(--on-navy-soft); font-size: 16px; }
+  .calc-result .detail strong { color: var(--white); }
+
+  /* ---------- Servicios: lista grande ---------- */
+  .services-head { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); align-items: end; margin-bottom: clamp(48px, 6vw, 88px); }
+  .services-head p { max-width: 42ch; justify-self: end; }
+  .service-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .service {
+    display: grid; grid-template-columns: 1.1fr 1.3fr auto; gap: clamp(24px, 4vw, 64px); align-items: start;
+    padding: clamp(28px, 3.4vw, 48px); border-radius: 24px; background: var(--tone-1);
+    transition: background .35s ease;
+  }
+  .service:hover { background: var(--tone-2); }
+  .service:hover .arrow { transform: translate(6px, -6px); }
+  .service h3 { font-size: var(--t-h3); letter-spacing: -0.03em; line-height: 1.02; }
+  .service p { max-width: 46ch; }
+  .service .tags { margin-top: 14px; font-size: var(--t-small); font-weight: 600; color: var(--ink-soft); }
+  .service .arrow { width: 40px; height: 40px; }
+
+  /* ---------- Proceso ---------- */
+  .process { background: var(--navy); color: var(--white); }
+  .process-head { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); align-items: end; }
+  .process-head p { color: var(--on-navy-soft); max-width: 40ch; justify-self: end; }
+  .steps { list-style: none; margin: clamp(64px, 7vw, 110px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gutter); }
+  .step { position: relative; }
+  .step-when { font-family: var(--serif); font-style: italic; font-size: 26px; color: var(--sky); }
+  .step h3 { margin-top: 18px; font-size: var(--t-h3); }
+  .step p { margin-top: 18px; color: var(--on-navy-soft); max-width: 34ch; }
+  .step-bar { display: flex; align-items: center; gap: 14px; margin-bottom: 30px; }
+  .step-bar b { flex: 1; height: 6px; border-radius: 6px; background: var(--navy-tone); position: relative; overflow: hidden; }
+  .step-bar b::after { content: ""; position: absolute; inset: 0; background: var(--orange); transform: scaleX(0); transform-origin: left; transition: transform 1.1s var(--ease); }
+  .step.in .step-bar b::after, .no-js .step-bar b::after { transform: scaleX(1); }
+  .step:nth-child(2) .step-bar b::after { transition-delay: .35s; }
+  .step:nth-child(3) .step-bar b::after { transition-delay: .7s; }
+  .step-bar .arrow { width: 26px; height: 26px; }
+  .process-cta { margin-top: clamp(64px, 7vw, 110px); display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+  .process-cta p { color: var(--on-navy-soft); }
+
+  /* ---------- Testimonios ---------- */
+  .voices { display: grid; grid-template-columns: 1.35fr 1fr; gap: clamp(40px, 6vw, 110px); margin-top: clamp(48px, 6vw, 88px); align-items: start; }
+  .voice blockquote { margin: 0; font-family: var(--serif); font-size: var(--t-statement); line-height: 1.3; letter-spacing: -0.005em; }
+  .voice.lead blockquote { font-size: clamp(28px, 2.9vw, 36px); }
+  .voice.lead blockquote::before { content: "\201C"; display: block; font-size: 96px; line-height: .6; height: 44px; color: var(--orange); }
+  .voice-side { display: grid; gap: clamp(40px, 5vw, 64px); }
+  .voice-side .voice { padding: 32px; border-radius: 24px; background: var(--tone-1); }
+  .voice-side blockquote { font-size: 23px; }
+  .person { display: flex; align-items: center; gap: 14px; margin-top: 28px; }
+  .avatar { width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center; background: var(--sky); font-weight: 800; font-size: 15px; }
+  .person strong { display: block; font-size: 17px; line-height: 1.3; }
+  .person span { font-size: var(--t-small); color: var(--ink-soft); }
+
+  /* ---------- FAQ ---------- */
+  .faq { padding-top: 0; }
+  .faq-layout { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(40px, 6vw, 110px); align-items: start; }
+  .faq-layout > div:first-child { position: sticky; top: 120px; }
+  .faq-list { display: grid; gap: 10px; }
+  .faq-item { border-radius: 20px; background: var(--tone-1); transition: background .3s ease; }
+  .faq-item[open] { background: var(--tone-2); }
+  .faq-item summary {
+    list-style: none; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center; gap: 24px;
+    padding: 26px 28px; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary .arrow { width: 24px; height: 24px; transform: rotate(90deg); }
+  .faq-item[open] summary .arrow { transform: rotate(-90deg); }
+  .faq-item summary:hover .arrow { color: var(--orange-press); }
+  .faq-item p { padding: 0 28px 28px; max-width: 60ch; }
+
+  /* ---------- Contacto ---------- */
+  .contact { background: var(--sky); }
+  .contact-layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(40px, 6vw, 110px); align-items: start; }
+  .contact .h2 { font-size: clamp(38px, 4.4vw, 64px); }
+  .contact-points { list-style: none; padding: 0; margin: 40px 0 0; display: grid; gap: 18px; font-size: 19px; font-weight: 600; }
+  .contact-points li { display: flex; gap: 14px; align-items: flex-start; }
+  .contact-points .arrow { width: 22px; height: 22px; margin-top: 3px; }
+  .contact-sign { margin-top: 56px; font-size: 30px; line-height: 1.1; letter-spacing: -0.02em; }
+  .contact-sign .human { font-family: var(--serif); }
+  .contact-sign .ai { font-weight: 800; color: var(--orange-press); }
+  .form-panel { background: var(--white); border-radius: 32px; padding: clamp(28px, 4vw, 56px); }
+  .form { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 18px; }
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field.full { grid-column: 1 / -1; }
+  .field label { font-size: 15px; font-weight: 700; }
+  .field label .req { color: var(--orange-press); }
+  .field input, .field select, .field textarea {
+    width: 100%; min-height: 54px; padding: 14px 16px;
+    border-radius: 14px; border: 1.5px solid #D5DCE3; background: var(--white);
+    font-size: 16px; transition: border-color .2s, box-shadow .2s;
+    -webkit-appearance: none; appearance: none;
+  }
+  .field textarea { min-height: 130px; resize: vertical; }
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%230E0F2C' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 16px center; padding-right: 42px; cursor: pointer;
+  }
+  .field input::placeholder, .field textarea::placeholder { color: #8A8CA3; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 4px var(--sky); }
+  .field.invalid input, .field.invalid select, .field.invalid textarea { border-color: var(--error); background: #FFF7F6; }
+  .error-msg { font-size: 14px; color: var(--error); font-weight: 600; display: none; }
+  .field.invalid .error-msg { display: block; }
+  .form-footer { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-top: 8px; }
+  .form-footer small { color: var(--ink-soft); font-size: 14px; max-width: 30ch; line-height: 1.45; }
+  .form-alert { grid-column: 1 / -1; display: none; padding: 14px 16px; border-radius: 12px; background: #FFF3F1; color: #A12A2A; font-size: 16px; }
+  .form-alert.show { display: block; }
+  .success { display: none; padding: 40px 0; }
+  .success.show { display: block; animation: rise .7s var(--ease) both; }
+  .success .arrow { width: 64px; height: 64px; }
+  .success h3 { margin-top: 28px; font-size: clamp(32px, 3.4vw, 46px); }
+  .success p { margin-top: 16px; max-width: 36ch; }
+
+  /* ---------- Footer ---------- */
+  .footer { background: var(--navy); color: var(--white); padding: clamp(80px, 9vw, 130px) 0 32px; overflow: hidden; }
+  .footer-top { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: var(--gutter); }
+  .footer-tag { font-size: clamp(26px, 2.4vw, 34px); line-height: 1.15; letter-spacing: -0.02em; max-width: 14ch; }
+  .footer-tag .human { font-family: var(--serif); }
+  .footer-tag .ai { font-weight: 800; color: var(--orange); }
+  .footer h4 { margin: 0 0 18px; font-size: 16px; font-weight: 700; color: var(--sky); }
+  .footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .footer ul a { text-decoration: none; color: var(--on-navy-soft); transition: color .2s; }
+  .footer ul a:hover { color: var(--white); }
+  .footer-word {
+    display: flex; align-items: flex-start; margin-top: clamp(64px, 8vw, 120px);
+    font-size: clamp(120px, 30vw, 460px); font-weight: 800; letter-spacing: -0.06em; line-height: .78; color: var(--white);
+  }
+  .footer-word .arrow { width: .3em; height: .3em; margin-left: .02em; margin-top: -.02em; }
+  .footer-bottom { margin-top: 40px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 14px; color: var(--on-navy-soft); }
+
+  /* ---------- Movimiento ---------- */
+  .js .reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+  .js .reveal.in { opacity: 1; transform: none; }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .js .reveal { opacity: 1; transform: none; transition: none; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1080px) {
+    .hero-layout { grid-template-columns: 1fr; align-items: start; }
+    .agent { max-width: 560px; }
+    .calc { grid-template-columns: 1fr; }
+    .contact-layout, .faq-layout { grid-template-columns: 1fr; }
+    .faq-layout > div:first-child { position: static; }
+    .footer-top { grid-template-columns: 1fr 1fr 1fr; }
+    .footer-top > div:first-child { grid-column: 1 / -1; }
+  }
+  @media (max-width: 900px) {
+    .menu-toggle { display: block; }
+    .nav-links {
+      position: fixed; top: 76px; left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      padding: 8px var(--gutter) 28px; background: var(--white);
+      box-shadow: 0 24px 40px -24px rgba(14,15,44,.35);
+      transform: translateY(-10px); opacity: 0; visibility: hidden;
+      transition: transform .3s ease, opacity .3s ease, visibility .3s;
+    }
+    .menu-open .nav-links { transform: none; opacity: 1; visibility: visible; }
+    .nav-links a:not(.btn) { padding: 16px 0; font-size: 20px; }
+    .nav-links .btn { margin-top: 16px; min-height: 56px; font-size: 17px; }
+    .services-head, .process-head { grid-template-columns: 1fr; }
+    .services-head p, .process-head p { justify-self: start; }
+    .service { grid-template-columns: 1fr auto; }
+    .service > div:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+    .service .arrow { grid-column: 2; grid-row: 1; width: 32px; height: 32px; }
+    .steps { grid-template-columns: 1fr; gap: 64px; }
+    .voices { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    body { font-size: 17px; }
+    .nav { height: 68px; }
+    .nav-links { top: 68px; }
+    .logo { font-size: 26px; }
+    .hero { padding-top: 120px; }
+    .hero-actions { flex-direction: column; align-items: stretch; gap: 18px; }
+    .hero-actions .text-link { justify-content: center; }
+    .agent { padding: 20px; border-radius: 20px; }
+    .agent-tasks li { grid-template-columns: 24px 1fr; }
+    .agent-tasks .time { grid-column: 2; margin-top: -6px; }
+    .stats { grid-template-columns: 1fr; gap: 44px; }
+    .calc { border-radius: 24px; padding: 28px 20px; }
+    .calc-result { padding: 28px 24px; }
+    .service { padding: 26px 22px; border-radius: 20px; }
+    .voice-side .voice { padding: 26px 22px; }
+    .voice-side blockquote { font-size: 21px; }
+    .faq-item summary { padding: 22px 20px; font-size: 18px; }
+    .faq-item p { padding: 0 20px 22px; }
+    .form-panel { border-radius: 24px; padding: 26px 20px; }
+    .form { grid-template-columns: 1fr; gap: 18px; }
+    .form-footer { flex-direction: column-reverse; align-items: stretch; }
+    .form-footer .btn { width: 100%; }
+    .form-footer small { max-width: none; text-align: center; }
+    .footer-top { grid-template-columns: 1fr 1fr; gap: 40px 20px; }
+    .footer-top > div:last-child { grid-column: 1 / -1; }
+    .footer-bottom { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="arrow" viewBox="0 0 24 24"><path d="M6.5 17.5L17.5 6.5M8.5 6.5h9v9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="header" id="header">
+  <div class="wrap nav">
+    <a href="#inicio" class="logo" aria-label="Forth, inicio">Forth<svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></a>
+    <nav class="nav-links" id="navLinks" aria-label="Principal">
+      <a href="#servicios">Servicios</a>
+      <a href="#proceso">Cómo trabajamos</a>
+      <a href="#testimonios">Clientes</a>
+      <a href="#faq">Preguntas</a>
+      <a href="#contacto" class="btn btn-sm">Agendar diagnóstico</a>
+    </nav>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div class="wrap">
+      <h1 class="tagline reveal">
+        <span class="human">Think human.</span>
+        <span class="ai">Operate AI.</span>
+      </h1>
+    </div>
+    <div class="wrap hero-layout">
+      <div>
+        <p class="hero-sub reveal">Convierte inteligencia en crecimiento.</p>
+        <div class="hero-actions reveal">
+          <a href="#contacto" class="btn">Agendar diagnóstico gratis <svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></a>
+          <a href="#servicios" class="text-link">Ver servicios</a>
+        </div>
+        <p class="hero-note reveal">Sesión de 45 minutos, sin costo y sin compromiso.</p>
+      </div>
+
+      <div class="agent reveal" data-ui aria-label="Ejemplo de un agente de IA de Forth completando tareas">
+        <div class="agent-head">
+          <span class="agent-name">Agente de operaciones</span>
+          <span class="agent-state"><i></i>Trabajando</span>
+        </div>
+        <p class="agent-msg">Buenos días. Cerré las tareas de la noche y dejé el reporte listo para tu reunión de las 9:00.</p>
+        <ul class="agent-tasks" id="agentTasks">
+          <li class="done"><span class="tick"><svg><use href="#check"/></svg></span>Conciliación bancaria de 1.240 movimientos<span class="time">3 min</span></li>
+          <li class="done"><span class="tick"><svg><use href="#check"/></svg></span>Respuesta a 86 consultas de clientes<span class="time">12 min</span></li>
+          <li class="done"><span class="tick"><svg><use href="#check"/></svg></span>Calificación de 34 oportunidades nuevas<span class="time">5 min</span></li>
+          <li class="done"><span class="tick"><svg><use href="#check"/></svg></span>Reporte semanal enviado a gerencia<span class="time">1 min</span></li>
+        </ul>
+        <div class="agent-foot">Tiempo recuperado hoy <strong>6,5 h<span>+</span></strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CIFRAS + CALCULADORA -->
+  <section class="proof" aria-label="Resultados">
+    <div class="wrap">
+      <div class="stats">
+        <div class="reveal">
+          <div class="stat-num" data-count="30">30<span>+</span></div>
+          <p class="stat-label">empresas acompañadas</p>
+        </div>
+        <div class="reveal">
+          <div class="stat-num" data-count="100">100<span>+</span></div>
+          <p class="stat-label">líderes formados</p>
+        </div>
+        <div class="reveal">
+          <div class="stat-num" data-count="40">40<span>%</span></div>
+          <p class="stat-label">menos tiempo operativo</p>
+        </div>
+      </div>
+
+      <div class="calc" id="calculadora">
+        <div>
+          <h2 class="reveal">¿Cuánto tiempo recuperaría tu equipo?</h2>
+          <p class="calc-intro reveal">Mueve los controles. Calculamos con el 40% de reducción promedio que logran nuestros clientes.</p>
+          <div class="calc-controls reveal">
+            <div class="range-row">
+              <label for="people">Personas en el equipo <output id="peopleOut" for="people">12</output></label>
+              <input type="range" id="people" min="1" max="200" value="12">
+            </div>
+            <div class="range-row">
+              <label for="hours">Horas semanales por persona en tareas repetitivas <output id="hoursOut" for="hours">10</output></label>
+              <input type="range" id="hours" min="1" max="30" value="10">
+            </div>
+          </div>
+        </div>
+        <div class="calc-result reveal" aria-live="polite">
+          <div class="big"><span id="calcHours">208</span><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></div>
+          <p class="unit">horas recuperadas al mes</p>
+          <p class="detail">Equivale a <strong id="calcDays">26</strong> jornadas completas que tu equipo puede dedicar a clientes, ventas y estrategia.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section class="section" id="servicios" style="padding-top:0">
+    <div class="wrap">
+      <div class="services-head">
+        <h2 class="h2 reveal">IA que se nota en resultados.</h2>
+        <p class="reveal">Diseñamos e implementamos soluciones a la medida de cómo opera tu empresa, con tu equipo en el centro.</p>
+      </div>
+      <ul class="service-list">
+        <li class="service reveal">
+          <h3>Automatizaciones</h3>
+          <div>
+            <p>Eliminamos tareas repetitivas conectando tus herramientas y flujos. Menos trabajo manual, menos errores, más foco en lo que importa.</p>
+            <p class="tags">Procesos, integraciones y reportería</p>
+          </div>
+          <svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg>
+        </li>
+        <li class="service reveal">
+          <h3>Agentes de IA</h3>
+          <div>
+            <p>Asistentes inteligentes que atienden clientes, califican oportunidades y ejecutan tareas, entrenados con el conocimiento de tu negocio.</p>
+            <p class="tags">Atención, ventas y operaciones</p>
+          </div>
+          <svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg>
+        </li>
+        <li class="service reveal">
+          <h3>Formación ejecutiva</h3>
+          <div>
+            <p>Programas prácticos para que líderes y equipos entiendan, adopten y gestionen la IA con criterio y confianza.</p>
+            <p class="tags">Talleres, programas in-company y directorios</p>
+          </div>
+          <svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg>
+        </li>
+        <li class="service reveal">
+          <h3>Consultoría estratégica</h3>
+          <div>
+            <p>Definimos dónde la IA genera más valor en tu empresa y construimos una hoja de ruta clara, priorizada y medible.</p>
+            <p class="tags">Diagnóstico, hoja de ruta y gobierno de IA</p>
+          </div>
+          <svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- PROCESO -->
+  <section class="section process" id="proceso">
+    <div class="wrap">
+      <div class="process-head">
+        <h2 class="h2 reveal">Tres pasos. Cero humo.</h2>
+        <p class="reveal">Un método simple para pasar de la curiosidad a resultados medibles en semanas, no en años.</p>
+      </div>
+      <ol class="steps">
+        <li class="step reveal">
+          <div class="step-bar"><b></b><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></div>
+          <span class="step-when">Semana 1</span>
+          <h3>Diagnóstico</h3>
+          <p>Entendemos tu operación, tus datos y tus objetivos. Identificamos las oportunidades con mayor impacto y menor fricción.</p>
+        </li>
+        <li class="step reveal">
+          <div class="step-bar"><b></b><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></div>
+          <span class="step-when">Semanas 2 a 6</span>
+          <h3>Implementación</h3>
+          <p>Construimos y conectamos las soluciones con tus sistemas. Probamos con casos reales y ajustamos junto a tu equipo.</p>
+        </li>
+        <li class="step reveal">
+          <div class="step-bar"><b></b><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></div>
+          <span class="step-when">De forma continua</span>
+          <h3>Adopción y escala</h3>
+          <p>Formamos a las personas, medimos resultados y escalamos lo que funciona. La IA pasa a ser parte de cómo trabajas.</p>
+        </li>
+      </ol>
+      <div class="process-cta reveal">
+        <a href="#contacto" class="btn">Empezar con un diagnóstico <svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></a>
+        <p>El primer paso es gratis.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIOS (contenido de ejemplo: reemplazar por testimonios reales) -->
+  <section class="section" id="testimonios">
+    <div class="wrap">
+      <h2 class="h2 reveal">Lo que dicen nuestros clientes.</h2>
+      <div class="voices">
+        <figure class="voice lead reveal" style="margin:0">
+          <blockquote>En dos meses automatizamos la conciliación y el reporte semanal. El equipo de finanzas recuperó casi un día completo por semana.</blockquote>
+          <figcaption class="person">
+            <span class="avatar" aria-hidden="true">MR</span>
+            <span><strong>María Rodríguez</strong><span>Gerente de Finanzas, Grupo Andino</span></span>
+          </figcaption>
+        </figure>
+        <div class="voice-side">
+          <figure class="voice reveal" style="margin:0">
+            <blockquote>El agente de atención responde el 70% de las consultas al instante. Se siente como nosotros, no como un robot.</blockquote>
+            <figcaption class="person">
+              <span class="avatar" aria-hidden="true">JP</span>
+              <span><strong>Javier Pérez</strong><span>Director Comercial, Nova Retail</span></span>
+            </figcaption>
+          </figure>
+          <figure class="voice reveal" style="margin:0">
+            <blockquote>Pasamos de preguntarnos qué es la IA a decidir dónde invertir. La formación cambió la conversación del directorio.</blockquote>
+            <figcaption class="person">
+              <span class="avatar" aria-hidden="true">CL</span>
+              <span><strong>Carolina López</strong><span>CEO, Lumen Salud</span></span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section faq" id="faq">
+    <div class="wrap faq-layout">
+      <div>
+        <h2 class="h2 reveal">Preguntas frecuentes.</h2>
+        <p class="lede reveal">Si tu duda no está aquí, escríbenos y te respondemos en menos de 24 horas.</p>
+      </div>
+      <div class="faq-list">
+        <details class="faq-item reveal">
+          <summary>¿Necesito un equipo técnico para trabajar con Forth?<svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></summary>
+          <p>No. Nos encargamos del diseño, la implementación y el soporte. Tu equipo aporta el conocimiento del negocio y nosotros lo traducimos a soluciones que funcionan.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary>¿Cuánto tiempo toma ver resultados?<svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></summary>
+          <p>Los primeros resultados suelen verse entre la segunda y la sexta semana. Priorizamos casos de alto impacto y rápida implementación para generar tracción desde el inicio.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary>¿Qué incluye el diagnóstico gratuito?<svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></summary>
+          <p>Una sesión de 45 minutos en la que revisamos tus procesos clave, identificamos dos o tres oportunidades concretas de IA y te entregamos una recomendación clara de próximos pasos.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary>¿Mis datos están seguros?<svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></summary>
+          <p>Sí. Trabajamos con acuerdos de confidencialidad, controles de acceso y proveedores con estándares empresariales. Definimos contigo qué datos se usan y cómo se protegen.</p>
+        </details>
+        <details class="faq-item reveal">
+          <summary>¿Trabajan con empresas de cualquier tamaño o industria?<svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></summary>
+          <p>Trabajamos con medianas y grandes empresas de distintas industrias: servicios, retail, salud, inmobiliario, finanzas y más. Lo importante es tener procesos que valga la pena mejorar.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section class="section contact" id="contacto">
+    <div class="wrap contact-layout">
+      <div>
+        <h2 class="h2 reveal">Agenda tu diagnóstico gratis.</h2>
+        <p class="lede reveal">Cuéntanos sobre tu empresa y te contactaremos para coordinar una sesión.</p>
+        <ul class="contact-points reveal">
+          <li><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg>Respuesta en menos de 24 horas</li>
+          <li><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg>Sesión de 45 minutos, sin costo</li>
+          <li><svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg>Oportunidades concretas para tu negocio</li>
+        </ul>
+        <p class="contact-sign reveal"><span class="human">Think human.</span> <span class="ai">Operate AI.</span></p>
+      </div>
+
+      <div class="form-panel reveal">
+        <form class="form" id="contactForm" novalidate>
+          <div class="field">
+            <label for="nombre">Nombre <span class="req">*</span></label>
+            <input id="nombre" name="nombre" type="text" autocomplete="name" placeholder="Tu nombre" required>
+            <span class="error-msg">Ingresa tu nombre.</span>
+          </div>
+          <div class="field">
+            <label for="empresa">Empresa <span class="req">*</span></label>
+            <input id="empresa" name="empresa" type="text" autocomplete="organization" placeholder="Nombre de tu empresa" required>
+            <span class="error-msg">Ingresa el nombre de tu empresa.</span>
+          </div>
+          <div class="field">
+            <label for="email">Email <span class="req">*</span></label>
+            <input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="nombre@empresa.com" required>
+            <span class="error-msg">Ingresa un email válido.</span>
+          </div>
+          <div class="field">
+            <label for="telefono">Teléfono</label>
+            <input id="telefono" name="telefono" type="tel" autocomplete="tel" inputmode="tel" placeholder="+56 9 1234 5678">
+            <span class="error-msg">Ingresa un teléfono válido.</span>
+          </div>
+          <div class="field full">
+            <label for="interes">Interés <span class="req">*</span></label>
+            <select id="interes" name="interes" required>
+              <option value="" selected disabled>Selecciona un servicio</option>
+              <option>Automatizaciones</option>
+              <option>Agentes de IA</option>
+              <option>Formación ejecutiva</option>
+              <option>Consultoría estratégica</option>
+            </select>
+            <span class="error-msg">Selecciona un servicio.</span>
+          </div>
+          <div class="field full">
+            <label for="mensaje">Mensaje</label>
+            <textarea id="mensaje" name="mensaje" placeholder="Cuéntanos brevemente qué te gustaría lograr"></textarea>
+            <span class="error-msg"></span>
+          </div>
+          <div class="form-alert" id="formAlert" role="alert">No pudimos enviar tus datos. Revisa tu conexión e inténtalo nuevamente.</div>
+          <div class="form-footer">
+            <small>Al enviar aceptas que te contactemos sobre tu solicitud. Los campos con * son obligatorios.</small>
+            <button type="submit" class="btn" id="submitBtn"><span>Enviar solicitud</span> <svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg></button>
+          </div>
+        </form>
+
+        <div class="success" id="formSuccess" role="status" aria-live="polite">
+          <svg class="arrow" aria-hidden="true"><use href="#arrow"/></svg>
+          <h3>Gracias, ya recibimos tus datos</h3>
+          <p>Te contactaremos en menos de 24 horas para coordinar tu diagnóstico.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <p class="footer-tag"><span class="human">Think human.</span> <span class="ai">Operate AI.</span></p>
+      </div>
+      <div>
+        <h4>Servicios</h4>
+        <ul>
+          <li><a href="#servicios">Automatizaciones</a></li>
+          <li><a href="#servicios">Agentes de IA</a></li>
+          <li><a href="#servicios">Formación ejecutiva</a></li>
+          <li><a href="#servicios">Consultoría estratégica</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Forth</h4>
+        <ul>
+          <li><a href="#proceso">Cómo trabajamos</a></li>
+          <li><a href="#testimonios">Clientes</a></li>
+          <li><a href="#faq">Preguntas frecuentes</a></li>
+          <li><a href="#calculadora">Calculadora</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Hablemos</h4>
+        <ul>
+          <li><a href="mailto:hola@forth.ai">hola@forth.ai</a></li>
+          <li><a href="#contacto">Agendar diagnóstico</a></li>
+          <li><a href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-word reveal" aria-hidden="true">Forth<svg class="arrow"><use href="#arrow"/></svg></div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> Forth. Todos los derechos reservados.</span>
+      <span>Convierte inteligencia en crecimiento.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // URL del Web App de Google Apps Script que recibe el formulario
+  const SCRIPT_URL = 'PEGAR_AQUI_URL_DE_APPS_SCRIPT';
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Barra con fondo al hacer scroll
+  const header = document.getElementById('header');
+  const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 12);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Menú móvil
+  const menuToggle = document.getElementById('menuToggle');
+  const setMenu = (open) => {
+    document.body.classList.toggle('menu-open', open);
+    menuToggle.setAttribute('aria-expanded', open);
+    menuToggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+  };
+  menuToggle.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
+  document.querySelectorAll('#navLinks a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+  window.addEventListener('resize', () => { if (window.innerWidth > 900) setMenu(false); });
+
+  // Contadores de las cifras
+  const animateCount = (el) => {
+    const target = +el.dataset.count;
+    const suffix = el.querySelector('span').outerHTML;
+    if (reduceMotion) return;
+    const start = performance.now();
+    const tick = (now) => {
+      const p = Math.min((now - start) / 1400, 1);
+      el.innerHTML = Math.round(target * (1 - Math.pow(1 - p, 3))) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  // El agente del hero completa sus tareas una por una
+  const runAgent = () => {
+    if (reduceMotion) return;
+    const items = [...document.querySelectorAll('#agentTasks li')];
+    items.forEach(li => li.classList.remove('done'));
+    items.forEach((li, i) => setTimeout(() => li.classList.add('done'), 700 + i * 650));
+  };
+
+  // Entradas escalonadas por sección
+  const reveals = [...document.querySelectorAll('.reveal')];
+  if ('IntersectionObserver' in window && !reduceMotion) {
+    document.querySelectorAll('section, footer').forEach(sec => {
+      sec.querySelectorAll('.reveal').forEach((el, i) => { el.style.transitionDelay = Math.min(i, 6) * 80 + 'ms'; });
+    });
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        el.classList.add('in');
+        el.querySelectorAll('[data-count]').forEach(animateCount);
+        if (el.matches('[data-count]')) animateCount(el);
+        if (el.classList.contains('agent')) runAgent();
+        io.unobserve(el);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => io.observe(el));
+  } else {
+    reveals.forEach(el => el.classList.add('in'));
+  }
+
+  // Calculadora de horas recuperadas
+  const people = document.getElementById('people');
+  const hours = document.getElementById('hours');
+  const fmt = new Intl.NumberFormat('es');
+  const updateCalc = () => {
+    const monthly = people.value * hours.value * 4.33 * 0.4;
+    document.getElementById('peopleOut').textContent = people.value;
+    document.getElementById('hoursOut').textContent = hours.value;
+    document.getElementById('calcHours').textContent = fmt.format(Math.round(monthly));
+    document.getElementById('calcDays').textContent = fmt.format(Math.round(monthly / 8));
+    [people, hours].forEach(r => r.style.setProperty('--fill', ((r.value - r.min) / (r.max - r.min)) * 100 + '%'));
+  };
+  people.addEventListener('input', updateCalc);
+  hours.addEventListener('input', updateCalc);
+  updateCalc();
+
+  // FAQ: solo una abierta a la vez
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.addEventListener('toggle', () => {
+      if (!item.open) return;
+      document.querySelectorAll('.faq-item[open]').forEach(other => { if (other !== item) other.open = false; });
+    });
+  });
+
+  // Formulario
+  const form = document.getElementById('contactForm');
+  const success = document.getElementById('formSuccess');
+  const alertBox = document.getElementById('formAlert');
+  const submitBtn = document.getElementById('submitBtn');
+  const submitLabel = submitBtn.querySelector('span');
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  const phoneRe = /^[+()\d\s.-]{7,20}$/;
+
+  const validateField = (input) => {
+    const value = input.value.trim();
+    let ok = true;
+    if (input.required && !value) ok = false;
+    else if (input.type === 'email' && value && !emailRe.test(value)) ok = false;
+    else if (input.type === 'tel' && value && !phoneRe.test(value)) ok = false;
+    input.closest('.field').classList.toggle('invalid', !ok);
+    input.setAttribute('aria-invalid', !ok);
+    return ok;
+  };
+
+  form.querySelectorAll('input, select, textarea').forEach(input => {
+    const evt = input.tagName === 'SELECT' ? 'change' : 'input';
+    input.addEventListener(evt, () => { if (input.closest('.field').classList.contains('invalid')) validateField(input); });
+    input.addEventListener('blur', () => { if (input.value.trim()) validateField(input); });
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    alertBox.classList.remove('show');
+
+    const inputs = [...form.querySelectorAll('input, select, textarea')];
+    const invalid = inputs.filter(input => !validateField(input));
+    if (invalid.length) { invalid[0].focus(); return; }
+
+    const data = new URLSearchParams();
+    new FormData(form).forEach((value, key) => data.append(key, String(value).trim()));
+    data.append('origen', window.location.hostname || 'local');
+
+    submitBtn.disabled = true;
+    submitLabel.textContent = 'Enviando...';
+
+    try {
+      if (SCRIPT_URL.startsWith('http')) {
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: data });
+      } else {
+        console.warn('SCRIPT_URL no está configurada. Datos que se enviarían:', Object.fromEntries(data));
+      }
+      form.style.display = 'none';
+      success.classList.add('show');
+    } catch (err) {
+      console.error(err);
+      alertBox.classList.add('show');
+      submitBtn.disabled = false;
+      submitLabel.textContent = 'Enviar solicitud';
+    }
+  });
+</script>
+</body>
+</html>
